@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from jitterFilter import JitterFilter
 from imageGenerator import ImageGenerator
 
+cmap = "gray"
 N = 64 
 testImage = ImageGenerator(N).generateLines(6) 
 
@@ -12,7 +13,7 @@ testClass.printJitterVector()
 
 fig, (ax1, ax2) = plt.subplots(1,2)
 
-ax1.imshow(testImage, cmap="gnuplot")
-ax2.imshow(jitterImage, cmap="gnuplot")
+ax1.imshow(testImage, cmap=cmap)
+ax2.imshow(jitterImage, cmap=cmap)
 
 plt.show()
