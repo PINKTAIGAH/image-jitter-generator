@@ -5,7 +5,8 @@ from imageGenerator import ImageGenerator
 
 cmap = "gray"
 N = 64 
-testImage = ImageGenerator(N).generateGenericNoise(nConvolutions=3, kernalSize=8) 
+testImage = ImageGenerator(N).generateRandomMnist() 
+N = testImage.shape[0]
 
 testClass = JitterFilter(testImage, N, 3)
 jitterImage = testClass.linearJitter()
