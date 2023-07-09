@@ -19,11 +19,13 @@ class JitterFilter(object):
         print(self.jitterVector)
 
 if __name__ == "__main__":
-    N = 5
-    testArray = np.arange(0, 5**2).reshape(N,N)
+    N = 7 
+    testArray = np.arange(0, N**2).reshape(N,N)
     testClass = JitterFilter(testArray, N, 1)
     jitteredArray = testClass.linearJitter()
 
     print(testArray)
-    print('/' * 20)
+    print('/' * 30)
     print(jitteredArray)
+    print('/' * 30)
+    testClass.printJitterVector()
