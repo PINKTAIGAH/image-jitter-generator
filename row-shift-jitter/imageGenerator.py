@@ -39,7 +39,16 @@ class ImageGenerator(object):
         image = Image.open(root + randomImage)
         imageArray = np.asarray((image))
         return imageArray
-        
+
+    def concatenateArray(self, arrayLeft, arrayRight):
+        return np.concatenate((arrayLeft, arrayRight), axis=1)
+
+    def saveArrayToImage(self, array, rootDir="../images/testImage.png"):
+        image = Image.fromarray(array)
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
+        image.save(rootDir)
+                  
 
 if __name__ == "__main__":
     cmap = "gray"
