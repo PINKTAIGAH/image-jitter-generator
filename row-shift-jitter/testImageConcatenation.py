@@ -6,7 +6,7 @@ from imageGenerator import ImageGenerator
 cmap = "gnuplot"
 N = 600 
 testGeneratorClass = ImageGenerator(N)
-testImage = testGeneratorClass.generateGenericNoise() 
+testImage = testGeneratorClass.generateRandomMnist() 
 N = testImage.shape[0]
 
 testJitterClass = JitterFilter(testImage, N, 3)

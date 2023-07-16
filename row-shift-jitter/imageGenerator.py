@@ -38,15 +38,22 @@ class ImageGenerator(object):
         randomImage = os.listdir(root)[np.random.randint(0, nImages-1)]
         image = Image.open(root + randomImage)
         imageArray = np.asarray((image))
+        self.N = 28
         return imageArray
+
+    def generateRandomGrayscale(self, root="/home/giorgio/Downloads/train/happy/"):
+        nImages = len(os.listdir(root))
+        randomImage = os.listdir(root)[np.random.randint(0, nImages-1)]
+        image = Image.open(root + randomImage)
+        imageArray = np.asarray((image))
+        self.N = 48
 
     def concatenateArray(self, arrayLeft, arrayRight):
         return np.concatenate((arrayLeft, arrayRight), axis=1)
 
     def saveArrayToImage(self, array, rootDir="../images/testImage.png"):
-        image = Image.fromarray(array)
-        if image.mode != 'RGB':
-            image = image.convert('RGB')
+        image = Image.fromarray(array*255)
+        image = image.convert('L')
         image.save(rootDir)
                   
 
