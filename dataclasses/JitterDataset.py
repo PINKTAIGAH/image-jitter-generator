@@ -14,16 +14,18 @@ class JitteredDataset(Dataset):
     def __len__(self):
         return self.length
 
-    def __get_item__(self):
+    def __getitem__(self, idx):
         groundTruthNumpy = self.Generator.genericNoise()
         jitteredTruthNumpy = self.Filter.rowJitter(groundTruthNumpy, self.N,
                                                    self.maxJitter)
 
-        groundTruthTorch = torch.from_numpy(groundTruthNumpy).type(torch.float32) 
-        jitteredTruthTorch = torch.from_numpy(jitteredTruthNumpy).type(torch.float32)
+        groundTruthTorch = torch.tensor(groundTruthNumpy, dtype=torch.float32) 
+        jitteredTruthTorch = torch.tensor(jitteredTruthNumpy, dtype=torch.float32) 
+        print("hello")
 
         return groundTruthTorch, jitteredTruthTorch
 
 if __name__ == "__main__":
     dataset = JitteredDataset(5, 2)
-    print(dataset)
+    example = dataset[0] 
+    print(example)
