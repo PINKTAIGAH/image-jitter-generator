@@ -8,7 +8,6 @@ class JitteredDataset(Dataset):
         self.N = N
         self.length = length
         self.maxJitter = maxJitter
-        self.psfSigma = psfSigma
         self.Generator = ImageGenerator(self.N)
         self.Filter = JitterFilter()
 
@@ -16,7 +15,7 @@ class JitteredDataset(Dataset):
         return self.length
 
     def __getitem__(self, idx):
-        groundTruthNumpy = self.Generator.genericNoise(sigma=self.psfSigma)
+        groundTruthNumpy = self.Generator.genericNoise()
         jitteredTruthNumpy = self.Filter.rowJitter(groundTruthNumpy, self.N,
                                                    self.maxJitter)
 
@@ -28,4 +27,5 @@ class JitteredDataset(Dataset):
 if __name__ == "__main__":
     dataset = JitteredDataset(5, 2)
     jittered, truth = dataset[0] 
+    print(jittered)
     
