@@ -1,26 +1,33 @@
 import torch
+import utils
 from torch.utils.data import Dataset
 from ImageGenerator import ImageGenerator
 from JitterFilter import JitterFilter
 
 class JitteredDataset(Dataset):
-    def __init__(self, N, maxJitter, psfSigma=3, length=100):
+    def __init__(self, N, maxJitter, psfSigma=3, length=100, concatImages=False):
         self.N = N
         self.length = length
         self.maxJitter = maxJitter
         self.Generator = ImageGenerator(self.N)
         self.Filter = JitterFilter()
+        self.concatImages = concatImages
+        self.psfSigma = psfSigma
 
     def __len__(self):
         return self.length
 
     def __getitem__(self, idx):
-        groundTruthNumpy = self.Generator.genericNoise()
+        groundTruthNumpy = self.Generator.genericNoise(sigma=self.psfSigma)
         jitteredTruthNumpy = self.Filter.rowJitter(groundTruthNumpy, self.N,
                                                    self.maxJitter)
 
         groundTruthTorch = torch.tensor(groundTruthNumpy, dtype=torch.float32) 
         jitteredTruthTorch = torch.tensor(jitteredTruthNumpy, dtype=torch.float32) 
+
+        if self.concatImages:
+            return utils.imageConcat(jitteredTruthTorch, groundTruthTorch)
+
 
         return groundTruthTorch, jitteredTruthTorch
 
