@@ -26,7 +26,7 @@ class JitteredDataset(Dataset):
         jitteredTruthTorch = torch.tensor(jitteredTruthNumpy, dtype=torch.float32) 
 
         if self.concatImages:
-            return utils.imageConcat(jitteredTruthTorch, groundTruthTorch)
+            return utils.tensorConcatinate(jitteredTruthTorch, groundTruthTorch)
 
 
         return groundTruthTorch, jitteredTruthTorch

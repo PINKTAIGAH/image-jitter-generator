@@ -13,7 +13,7 @@ SOBEL_KERNAL = torch.tensor(
     ], dtype=torch.float32
 )
 
-def arrayConcatinate(tensorLeft, tensorRight):
+def tensorConcatinate(tensorLeft, tensorRight):
     tensorRight = tensorRight.view(-1, tensorRight.shape[-1])
     tensorLeft = tensorLeft.view(-1, tensorLeft.shape[-1])
     return torch.cat((tensorLeft, tensorRight), dim=1) 
@@ -28,6 +28,6 @@ def verticalEdges(inputTensor):
 if __name__ == "__main__":
     image = torch.from_numpy(face(gray=True,)).type(torch.float32)
     imageEdges = verticalEdges(image)
-    imageConcat = arrayConcatinate(image, imageEdges)
+    imageConcat = tensorConcatinate(image, imageEdges)
     plt.imshow(imageConcat.numpy(), cmap = "gray")
     plt.show()
