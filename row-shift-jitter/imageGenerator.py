@@ -25,7 +25,8 @@ class ImageGenerator(object):
         self.array = np.random.random((self.N, self.N))
 
         for _ in range(nConvolutions):
-            self.array = convolve2d(self.array, self.kernal, boundary="wrap")
+            self.array = convolve2d(self.array, self.kernal, boundary="wrap", mode="same")
+        print(self.array.shape)
         return self.array 
 
     def createKernalPSF(self):
