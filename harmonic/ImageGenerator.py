@@ -30,6 +30,7 @@ class ImageGenerator(object):
         shiftsX = torch.from_numpy(wavelets.generateShiftMatrix(self.imageHight,
                                     self.correlationLength,
                                     self.maxJitter))
+        shiftsX = torch.unsqueeze(shiftsX, 2)
         shiftsY = torch.zeros_like(shiftsX)
         return torch.cat([shiftsX, shiftsY], dim=2)
         
@@ -62,9 +63,10 @@ def test():
                             config.CORRELATION_LENGTH, config.PADDING_WIDTH)
 
     groundTruth = filter.generateGroundTruth()
-    # shifts = filter.generateShifts()
+    shiftMatrix = filter.generateShifts()
 
     print(groundTruth.shape)
+    print(shiftMatrix)
     plt.imshow(groundTruth, cmap="gray")
     plt.show()
 if __name__ == "__main__":
