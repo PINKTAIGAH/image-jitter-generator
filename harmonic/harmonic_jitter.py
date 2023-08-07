@@ -82,14 +82,15 @@ for i in range(IMAGE_SIZE+30):
         img_replacement[i, :j] = shift(groundTruth[i, :j], shifts[j], output=None, 
                                 order=3, mode="constant", cval=0, prefilter=True)
 
-padding_mask = np.where(img_replacement==0)
-print(padding_mask)
+padding_mask = img_replacement==0.0
+# print(pdding_)
 
-fig, (ax1, ax2,) = plt.subplots(1, 2)
+# fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
 
-ax1.imshow(groundTruth, cmap="gray")
-ax2.imshow(img_replacement, cmap="gray")
-# ax3.imshow(img_replacement[padding_mask, cmap="gray")
+# ax1.imshow(groundTruth, cmap="gray")
+# ax2.imshow(img_replacement, cmap="gray")
+# ax3.imshow(padding_mask, cmap="gray")
+plt.imshow(padding_mask)
 """
 fig, (ax1, ax2) = plt.subplots(2, 1)
 ax1.scatter(x, shift_vector[0], s=5, marker='x')
