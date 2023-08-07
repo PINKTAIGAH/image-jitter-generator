@@ -1,8 +1,11 @@
+from kornia.geometry.transform import warp_perspective
 from ImageGenerator import ImageGenerator
 import config
+import utils
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
+
 
 def generateRandomFrequency(mode="m"):
     match mode:
@@ -31,22 +34,35 @@ def generateLowJitter():
 
 def generateHighJitter():
     return generateRandomAmplitude(3)*np.sin(2*np.pi*generateRandomFrequency('h')*generateRandoPhase())
-
-displacementConstX = 1.27
-displacementConstY = 1
-shiftList = []
-
-filter = ImageGenerator(config.PSF, config.MAX_JITTER, config.IMAGE_SIZE)
-groundTruth, _ = filter.generateGroundTruth()
-
-for _ in range(1000):
-    altitudeJitter = generateMainJitter() + sum([generateLowJitter() for _ in range(5)]) +\
-        sum([generateHighJitter() for _ in range(5)])
                 
-    shiftX = altitudeJitter*displacementConstX
-    shiftList.append(shiftX)
+def message(x):
+    f_m, A_m, P_m = generateRandomFrequency("m"), generateRandomAmplitude(5), generateRandoPhase()
+    f_l, A_l, P_l = generateRandomFrequency("l"), generateRandomAmplitude(5), generateRandoPhase()
+    f_h, A_h, P_h = generateRandomFrequency("h"), generateRandomAmplitude(5), generateRandoPhase()
+    return A_m*np.sin(2*np.pi*f_m*x+P_m) + A_l*np.sin(2*np.pi*f_l*x+P_l) + A_h*np.sin(2*np.pi*f_h*x+P_h)
 
-plt.plot(shiftList)
+def carrier(x):
+    f = generateRandomFrequency('l')
+    return np.sin(f*np.pi*x/256)
+
+def decay(x, x_0=0.0, std=1.0):
+    return np.exp(-(x-x_0)**2/(2*std**2))
+
+CORRELATION_LENGTH = 4
+MAX_JITTER =  5
+wavelet_centers = np.arange(0, 256, CORRELATION_LENGTH*3)
+x = np.arange(256)
+y_final = np.zeros_like(x, dtype=np.float64)
+
+for i, val in enumerate(wavelet_centers):
+    y = message(x)
+    y_decay = decay(x, val, CORRELATION_LENGTH)
+    y_carrier = carrier(x)
+    y_final += utils.adjustArray(y * y_decay * y_carrier)*MAX_JITTER
+
+fig, (ax1, ax2) = plt.subplots(2, 1)
+ax1.scatter(x, y_final, s=5, marker='x')
+ax2.plot(x, y_final)
 plt.show()
     
 
