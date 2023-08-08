@@ -81,20 +81,28 @@ def shiftImage(input, shiftMatrix):
 filter = ImageGenerator(config.PSF, config.MAX_JITTER, config.IMAGE_SIZE,
                         config.CORRELATION_LENGTH, config.PADDING_WIDTH)
 groundTruth = filter.generateGroundTruth().numpy()
+print(f"ground truth generated")
 
 shiftMatrix = generateShiftVector(config.IMAGE_SIZE, config.CORRELATION_LENGTH,
                                    config.MAX_JITTER)
+print(f"shift matrix generated")
 shiftMatrix[:, 0] = 0
+t1 = time()
 shifted = shiftImage(groundTruth, shiftMatrix)
+print(f"shift image generated")
+t2 = time()
 unshifted = shiftImage(shifted, -shiftMatrix)
+print(f"unshift image generated")
 
 # padding_mask = shifted==0.0
 
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
 
+print(f"Time taken to shift image of {config.IMAGE_SIZE}p is {t2-t1} s")
 ax1.imshow(groundTruth, cmap="gray")
 ax2.imshow(shifted, cmap="gray")
-# ax3.imshow(, cmap="gray")
+ax3.imshow(unshifted, cmap="gray")
+ax4.imshow(groundTruth-unshifted, cmap="gray")
 plt.show()
 
     

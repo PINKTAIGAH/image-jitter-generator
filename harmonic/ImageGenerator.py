@@ -87,10 +87,11 @@ def test():
 
     unshifted = filter.shiftImage(shifted[0], -shiftMatrix, isBatch=False)
 
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
     ax1.imshow(groundTruth[0], cmap="gray")
-    ax2.imshow(shifted[0, 0], cmap="gray")
-    ax3.imshow(unshifted[0, 0], cmap="gray")
+    ax2.imshow(shifted[0,0], cmap="gray")
+    ax3.imshow(unshifted[0,0], cmap="gray")
+    ax4.imshow(groundTruth[0]-unshifted[0,0], cmap="gray")
     plt.show()
 if __name__ == "__main__":
     test()
