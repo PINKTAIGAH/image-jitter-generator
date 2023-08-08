@@ -8,11 +8,11 @@ def normalise(x):
 
     return x/np.sum(x**2)
 
-IMAGE_SIZE = 256
+IMAGE_SIZE = 256 
 CORRELATION_LENGTH = 2
 SIGMA = 10 
 CHANNELS_IMG = 1 
-MAX_JITTER = 1.5
+MAX_JITTER = 0.5
 PADDING_WIDTH = 15
 
 psf_hight = IMAGE_SIZE-2*PADDING_WIDTH

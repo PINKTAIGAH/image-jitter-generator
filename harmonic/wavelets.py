@@ -67,4 +67,5 @@ def generateShiftMatrix(imageSize, correlationLength, maxJitter):
             y_carrier = carrier(x, imageSize)
             y_final += utils.adjustArray(y * y_decay * y_carrier)*maxJitter
         shift_vector[j] = y_final
+    shift_vector[:,0] = 0
     return shift_vector

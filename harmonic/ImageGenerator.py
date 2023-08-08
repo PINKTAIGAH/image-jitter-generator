@@ -1,3 +1,4 @@
+from ctypes import alignment
 from torch.utils.data import Dataset
 import scipy.ndimage as ndimg
 import torch
@@ -35,18 +36,32 @@ class ImageGenerator(object):
         return torch.cat([shiftsX, shiftsY], dim=2)
         
 
-    def newShiftImageHorizontal(self, input, shifts, isBatch=True):
+    def shiftImage(self, input, shifts, isBatch=True):
         if not isBatch:
             input = torch.unsqueeze(input, 0)
             shifts = torch.unsqueeze(shifts, 0)
 
         if len(input.shape) != 4:
             raise Exception("Input image must be of dimention 4: (B, C, H, W)")
-        if len(shifts.shape) !=3:
-            raise Exception("Shifts must be of the shape (B, H, 2)")
+        if len(shifts.shape) !=4:
+            raise Exception("Shifts must be of the shape (B, H, W, 2)")
 
-        B, _, H, _ = input.shape
+        B, _, H, W = input.shape
         output = torch.zeros_like(input)
+
+        for i in range(B):
+            singleImage = torch.unsqueeze(torch.clone(input[i]), 0)
+            for j in range(H):
+                singleVectorRow = torch.cumsum(shifts[i, j], dim=0).type(torch.float32)
+                for k in range(W):
+                    if k > 0:
+                        shift = torch.unsqueeze(singleVectorRow[k], 0).type(torch.float32)
+                        output[:, :, j, :k] = translate(torch.unsqueeze(singleImage[:, :, j, :k], 0),
+                                        shift,
+                                        mode="bilinear",
+                                        align_corners=False) 
+
+        """
         for i in range(B):
             singleImage = torch.unsqueeze(torch.clone(input[i]),0)
             singleShift = torch.clone(shifts[i])
@@ -55,6 +70,7 @@ class ImageGenerator(object):
                                                torch.unsqueeze(singleShift[j], 0),
                                                padding_mode="reflection",
                                                align_corners=False)
+        """
         return output
 
 def test():
@@ -62,12 +78,19 @@ def test():
     filter = ImageGenerator(config.PSF, config.MAX_JITTER, config.IMAGE_SIZE,
                             config.CORRELATION_LENGTH, config.PADDING_WIDTH)
 
-    groundTruth = filter.generateGroundTruth()
-    shiftMatrix = filter.generateShifts()
+    groundTruth = filter.generateGroundTruth()  # C*H*W 
+    shiftMatrix = filter.generateShifts()       # H*W*2
 
-    print(groundTruth.shape)
-    print(shiftMatrix)
-    plt.imshow(groundTruth, cmap="gray")
+    groundTruth = torch.unsqueeze(groundTruth, 0)
+
+    shifted = filter.shiftImage(groundTruth, shiftMatrix, isBatch=False)
+
+    unshifted = filter.shiftImage(shifted[0], -shiftMatrix, isBatch=False)
+
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+    ax1.imshow(groundTruth[0], cmap="gray")
+    ax2.imshow(shifted[0, 0], cmap="gray")
+    ax3.imshow(unshifted[0, 0], cmap="gray")
     plt.show()
 if __name__ == "__main__":
     test()

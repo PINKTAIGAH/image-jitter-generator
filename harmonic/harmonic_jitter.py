@@ -67,35 +67,34 @@ def generateShiftVector(imageSize, correlationLength, maxJitter):
         shift_vector[j] = y_final
     return shift_vector
 
-IMAGE_SIZE = 256
-CORRELATION_LENGTH = 2
-MAX_JITTER = 0.2 
-groundTruth, _ = ImageGenerator(config.PSF, 4, IMAGE_SIZE-30).generateGroundTruth()
-groundTruth = np.pad(groundTruth.numpy(), ((15,15), (15, 15)))
-shift_vector = generateShiftVector(IMAGE_SIZE+30, CORRELATION_LENGTH, MAX_JITTER)
-shift_vector[:, 0] = 0
-# x = np.arange(IMAGE_SIZE)
-img_replacement = np.zeros_like(groundTruth)
-for i in range(IMAGE_SIZE+30):
-    for j in range(IMAGE_SIZE+30):
-        shifts = np.cumsum(shift_vector[i])
-        img_replacement[i, :j] = shift(groundTruth[i, :j], shifts[j], output=None, 
-                                order=3, mode="constant", cval=0, prefilter=True)
+def shiftImage(input, shiftMatrix):
 
-padding_mask = img_replacement==0.0
-# print(pdding_)
+    output = np.zeros_like(groundTruth)
+    for i in range(config.IMAGE_SIZE):
+        for j in range(config.IMAGE_SIZE):
+            shifts = np.cumsum(shiftMatrix[i])
+            output[i, :j] = shift(input[i, :j], shifts[j], output=None, 
+                                    order=3, mode="constant", cval=0, prefilter=True)
 
-# fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+    return output
 
-# ax1.imshow(groundTruth, cmap="gray")
-# ax2.imshow(img_replacement, cmap="gray")
-# ax3.imshow(padding_mask, cmap="gray")
-plt.imshow(padding_mask)
-"""
-fig, (ax1, ax2) = plt.subplots(2, 1)
-ax1.scatter(x, shift_vector[0], s=5, marker='x')
-ax2.plot(x, shift_vector[0])
-"""
+filter = ImageGenerator(config.PSF, config.MAX_JITTER, config.IMAGE_SIZE,
+                        config.CORRELATION_LENGTH, config.PADDING_WIDTH)
+groundTruth = filter.generateGroundTruth().numpy()
+
+shiftMatrix = generateShiftVector(config.IMAGE_SIZE, config.CORRELATION_LENGTH,
+                                   config.MAX_JITTER)
+shiftMatrix[:, 0] = 0
+shifted = shiftImage(groundTruth, shiftMatrix)
+unshifted = shiftImage(shifted, -shiftMatrix)
+
+# padding_mask = shifted==0.0
+
+fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+
+ax1.imshow(groundTruth, cmap="gray")
+ax2.imshow(shifted, cmap="gray")
+# ax3.imshow(, cmap="gray")
 plt.show()
 
     
