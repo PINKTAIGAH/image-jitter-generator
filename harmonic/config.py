@@ -14,6 +14,7 @@ SIGMA = 10
 CHANNELS_IMG = 1 
 MAX_JITTER = 0.4
 PADDING_WIDTH = 15
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
 
 psf_hight = IMAGE_SIZE-2*PADDING_WIDTH
 kernal = np.zeros((psf_hight, psf_hight))
