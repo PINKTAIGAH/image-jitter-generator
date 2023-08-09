@@ -30,9 +30,9 @@ class ImageGenerator(object):
     def generateShifts(self):
         shiftsX = torch.from_numpy(wavelets.generateShiftMatrix(self.imageHight,
                                     self.correlationLength,
-                                    self.maxJitter)).to(config.DEVICE)
+                                    self.maxJitter))
         shiftsX = torch.unsqueeze(shiftsX, 2)
-        shiftsY = torch.zeros_like(shiftsX).to(config.DEVICE)
+        shiftsY = torch.zeros_like(shiftsX)
         return torch.cat([shiftsX, shiftsY], dim=2)
         
 
@@ -47,7 +47,7 @@ class ImageGenerator(object):
             raise Exception("Shifts must be of the shape (B, H, W, 2)")
 
         B, _, H, W = input.shape
-        output = torch.zeros_like(input).to(config.DEVICE)
+        output = torch.zeros_like(input)
 
         for i in range(B):
             singleImage = torch.unsqueeze(torch.clone(input[i]), 0)
@@ -78,8 +78,8 @@ def test():
     filter = ImageGenerator(config.PSF, config.MAX_JITTER, config.IMAGE_SIZE,
                             config.CORRELATION_LENGTH, config.PADDING_WIDTH)
 
-    groundTruth = filter.generateGroundTruth().to(config.DEVICE)  # C*H*W 
-    shiftMatrix = filter.generateShifts().to(config.DEVICE)       # H*W*2
+    groundTruth = filter.generateGroundTruth()  # C*H*W 
+    shiftMatrix = filter.generateShifts()       # H*W*2
 
     groundTruth = torch.unsqueeze(groundTruth, 0)
 
@@ -88,10 +88,10 @@ def test():
     unshifted = filter.shiftImage(shifted[0], -shiftMatrix, isBatch=False)
 
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
-    ax1.imshow(groundTruth[0].cpu(), cmap="gray")
-    ax2.imshow(shifted[0,0].cpu(), cmap="gray")
-    ax3.imshow(unshifted[0,0].cpu(), cmap="gray")
-    ax4.imshow(groundTruth[0].cpu()-unshifted[0,0].cpu(), cmap="gray")
+    ax1.imshow(groundTruth[0], cmap="gray")
+    ax2.imshow(shifted[0,0], cmap="gray")
+    ax3.imshow(unshifted[0,0], cmap="gray")
+    ax4.imshow(groundTruth[0]-unshifted[0,0], cmap="gray")
     plt.show()
 if __name__ == "__main__":
     test()

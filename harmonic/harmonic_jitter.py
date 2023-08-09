@@ -73,7 +73,7 @@ def shiftImage(input, shiftMatrix):
     for i in range(config.IMAGE_SIZE):
         for j in range(config.IMAGE_SIZE):
             shifts = np.cumsum(shiftMatrix[i])
-            output[i, :j] = shift(output[i, :j], shifts[j], output=None, 
+            output[i, :j] = shift(input[i, :j], shifts[j], output=None, 
                                     order=3, mode="constant", cval=0, prefilter=True)
 
     return output
